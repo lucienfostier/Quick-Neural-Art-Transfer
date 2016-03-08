@@ -10,3 +10,8 @@ Several modification are made to speed up the process.
 2. Has an option to use ADAM as the optimizer.
 3. Use shared memory and can precompile theanot functions. 
 4. Has a server and a Kivy GUI client, so you can capture image using a mobile device and the use the GPU on a remote machine.
+
+styles
+
+CC-By 4.0 http://agf81.deviantart.com/art/Ivy-Texture-7-326197006?q=gallery%3ACreative-Commons%2F26171837&qo=33
+Ivy texture
