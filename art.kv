@@ -1,0 +1,46 @@
+#:kivy 1.7.1
+#:import ListAdapter kivy.adapters.listadapter.ListAdapter
+#:import Factory kivy.factory.Factory
+
+<MenuScreen>:
+    BoxLayout:
+        Button:
+            text: 'Goto settings'
+            on_press: root.manager.current = 'camera'
+        Button:
+            text: 'style'
+            on_press: root.manager.current = "style"
+<CameraScreen>
+    FloatLayout:
+        orientation: 'vertical'
+        Label:
+            id: w_info
+            font_name: 'NotoSansCJK.ttc'
+            size_hint: (1, .2,)
+            pos_hint: {'x': .0, 'y':.8}
+            
+            
+<ProcessScreen>
+    FloatLayout:
+        orientation: 'vertical'
+        Label:
+            id: w_info
+            font_name: 'NotoSansCJK.ttc'
+            size_hint: (1, .2,)
+            pos_hint: {'x': .0, 'y':.8}
+
+
+<StyleScreen>
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            id: w_info
+            font_name: 'NotoSansCJK.ttc'
+            size_hint: (1, .2,)
+        Carousel:
+            id: w_carousel
+            direction: 'right'
+            loop: True
+
+
+    
