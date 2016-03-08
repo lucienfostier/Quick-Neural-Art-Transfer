@@ -136,8 +136,8 @@ def deprocess(x, BGR=BGR):
 
 import time
 start = time.time()
-default_art_img = 'styles/brad_pitt.jpg' 
-default_photo_img = 'styles/brad_pitt.jpg'
+default_art_img = 'styles/starry_night.jpg' 
+default_photo_img = 'styles/starry_night.jpg'
 shared_mem = {}
 func_mem = {}
 outputs_mem = {}
