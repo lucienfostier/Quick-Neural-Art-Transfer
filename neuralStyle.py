@@ -248,7 +248,7 @@ def p_transfer(photo_img=default_photo_img, art_img=default_art_img, precompute=
         yield x0
     for x0 in transfer(400, photo_img, art_img, iters=p(2), maxfun=20, init_img=x0, photo_weight=0.001, ADAM=False):
         yield x0
-    yield from transfer(640, photo_img, art_img, iters=p(3), maxfun=6, init_img=x0, photo_weight=0.001, ADAM=False, learning_rate=8.)
+    yield from transfer(640, photo_img, art_img, iters=p(1), maxfun=8, init_img=x0, photo_weight=0.001, ADAM=False, learning_rate=8.)
         
 def precompute():
     for x in p_transfer(precompute=True):

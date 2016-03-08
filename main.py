@@ -145,7 +145,7 @@ class ProcessScreen(Screen):
         
     @mainthread
     def update_progress(self, img):
-        N = 7
+        N = 5
         #image = skimage.transform.resize(img, (480, 640), preserve_range=True).astype(np.uint8)
         image = cv2.resize(img, (640,480), interpolation=cv2.INTER_LANCZOS4)
         image = cv2.flip(image, 0)
@@ -297,7 +297,7 @@ class CameraScreen(Screen):
                 root.current = "process"
             if self.state%20 == 0:
                 self.ids.w_info.text = "倒數 %d 照相 (按鍵取消重選)"%(self.state//30)
-                self.ids.w_info.font_size = 64
+                self.ids.w_info.font_size = 32
             self.state -=1
 
 class StyleScreen(Screen):
