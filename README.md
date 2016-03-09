@@ -11,7 +11,9 @@ Several modification are made to speed up the process.
 3. Use shared memory and can precompile theanot functions. 
 4. Has a server and a Kivy GUI client, so you can capture image using a mobile device and the use the GPU on a remote machine.
 
-styles
+content and styles
+Many image files are from https://github.com/jcjohnson/neural-style
+
 
 CC-By  http://agf81.deviantart.com/art/Ivy-Texture-7-326197006?q=gallery%3ACreative-Commons%2F26171837&qo=33
 Ivy texture
@@ -33,3 +35,4 @@ ndhu
 CC-BY
 https://www.flickr.com/photos/jphotos/5998521863/in/photolist-mW6gp-JxQGc-Jy5Xf-Jy3ES-mW6fr-Jy9eM-mW6hW-JxQqD-JxMdm-mW6nF-JxQtD-JxQxR-mW6mA-JxLZS-Jy72p-JxM2N-Jy3Hh-JxLU7-JxLWb-JxQsz-oH3ixB-4Nri37-JxQJr-JxQFe-Jy3AY-JxMcq-Jy3xG-JxQvT-Jy95i-Jy99n-JxQz2-a97MmE-JxQm6-Jy5V5-a97Nqb-a97PVu-Jy97c-a94ZyK-ADmwE6-B3g6KV-ADmtTV-BysQ61-a97Ptd-a94Zex-dwVdG-fJCm8H-ih4o2w-farbgP-ez8gpV-a244iL
 ndhu2
+
