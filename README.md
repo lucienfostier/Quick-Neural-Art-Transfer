@@ -36,3 +36,5 @@ CC-BY
 https://www.flickr.com/photos/jphotos/5998521863/in/photolist-mW6gp-JxQGc-Jy5Xf-Jy3ES-mW6fr-Jy9eM-mW6hW-JxQqD-JxMdm-mW6nF-JxQtD-JxQxR-mW6mA-JxLZS-Jy72p-JxM2N-Jy3Hh-JxLU7-JxLWb-JxQsz-oH3ixB-4Nri37-JxQJr-JxQFe-Jy3AY-JxMcq-Jy3xG-JxQvT-Jy95i-Jy99n-JxQz2-a97MmE-JxQm6-Jy5V5-a97Nqb-a97PVu-Jy97c-a94ZyK-ADmwE6-B3g6KV-ADmtTV-BysQ61-a97Ptd-a94Zex-dwVdG-fJCm8H-ih4o2w-farbgP-ez8gpV-a244iL
 ndhu2
 
+CC-BY https://www.flickr.com/photos/kurtbudiarto/7257851556/in/photolist-c4mopE-jZZkdx-8bohuZ-bjLvVe-c4wRru-gkp48t-hPNbbL-qfySJz-c84E3h-fBV6ve-aijVu7-fCaHPs-qZ7XnX-f8zn77-eQRUQ5-695MbG-dQNbTm-rowN34-6o4FFz-d3MjtL-9htwN2-r6Yib1-fCau8q-fCaCh9-551xgk-bkueEX-fBVtqt-pbJvac-fCbdY9-aRQ2oH-oUai6n-fCbaRs-fKzB9m-fCbmqA-7kBUGU-eX5Ce9-fBVu9x-ftqE1w-aihyDg-bku5n4-54rawt-nixm7H-dDjykx-55JGBX-c4mnWy-bkudkH-pRMC8L-55JGWa-5A9m5g-6uijiE/
+smile face
