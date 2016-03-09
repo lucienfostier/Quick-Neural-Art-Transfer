@@ -12,8 +12,7 @@ Several modification are made to speed up the process.
 4. Has a server and a Kivy GUI client, so you can capture image using a mobile device and the use the GPU on a remote machine.
 
 content and styles
-Many image files are from https://github.com/jcjohnson/neural-style
-
+Many image files are from https://github.com/jcjohnson/neural-style and some are public domain
 
 CC-By  http://agf81.deviantart.com/art/Ivy-Texture-7-326197006?q=gallery%3ACreative-Commons%2F26171837&qo=33
 Ivy texture
