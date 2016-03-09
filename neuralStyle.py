@@ -239,7 +239,7 @@ def transfer(IMAGE_W=512, photo_img=default_photo_img, art_img=default_art_img,
         yield  deprocess(x0)
 
 # mixed
-def p_transfer(photo_img=default_photo_img, art_img=default_art_img, precompute=False):
+def p_transfer(photo_img=default_photo_img, art_img=default_art_img, precompute=False, preview=False):
     global start
     start = time.time()
     p = lambda n: 0 if precompute else n
@@ -248,7 +248,8 @@ def p_transfer(photo_img=default_photo_img, art_img=default_art_img, precompute=
         yield x0
     for x0 in transfer(400, photo_img, art_img, iters=p(2), maxfun=20, init_img=x0, photo_weight=0.001, ADAM=False):
         yield x0
-    yield from transfer(640, photo_img, art_img, iters=p(1), maxfun=8, init_img=x0, photo_weight=0.001, ADAM=False, learning_rate=8.)
+    if not preview:
+        yield from transfer(640, photo_img, art_img, iters=p(1), maxfun=8, init_img=x0, photo_weight=0.001, ADAM=False, learning_rate=8.)
         
 def precompute():
     for x in p_transfer(precompute=True):
