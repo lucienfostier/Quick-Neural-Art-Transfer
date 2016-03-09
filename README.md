@@ -13,11 +13,14 @@ Several modification are made to speed up the process.
 
 styles
 
-CC-By 4.0 http://agf81.deviantart.com/art/Ivy-Texture-7-326197006?q=gallery%3ACreative-Commons%2F26171837&qo=33
+CC-By  http://agf81.deviantart.com/art/Ivy-Texture-7-326197006?q=gallery%3ACreative-Commons%2F26171837&qo=33
 Ivy texture
 
-CC-BY-SA  4.0 http://maadmann.deviantart.com/art/Fullcolor-437966862?q=gallery%3ACreative-Commons%2F26171826&qo=88
+CC-BY-SA   http://maadmann.deviantart.com/art/Fullcolor-437966862?q=gallery%3ACreative-Commons%2F26171826&qo=88
 fullcolor
 
 CC-BY https://www.flickr.com/photos/fontplaydotcom/24795772945/in/pool-734017@N25/
 color squares
+CCB-BY-SA 
+http://oilsoaked.deviantart.com/art/holiday-188505340?q=gallery%3ACreative-Commons%2F26171826&qo=373
+Holidy
