@@ -12,7 +12,7 @@ except:
         im = PIL_Image.fromarray(img[:,:,::-1])
         im.save("output_%d.png"%count, format='png')
         count += 1
-    def waitKey(n):
+    def waitKey(n=0):
         pass
 
 import sys
