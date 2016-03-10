@@ -204,23 +204,6 @@ class CameraScreen(Screen):
         super(Screen, self).__init__( **kwargs)
         cap = self.cap = cv2.VideoCapture(0)
         self.video_texture = Texture.create(size=(640, 480), colorfmt='rgb')
-        """
-        sleep(2)
-        bgs = []
-        while len(bgs)<5:
-            r, bg = cap.read()
-            bg = cv2.flip(bg, 1)
-            bg = bg.astype(float)
-            if all(np.mean(np.linalg.norm(bg-bg0, axis=2)) < 30 for bg0 in bgs):
-                bgs.append(bg)
-                print("append")
-            else:
-                bgs=[bg]
-                print("init")
-            bg0 = bg
-            sleep(0.2)
-        self.bgs = bgs
-        """
         with self.canvas:
             w, h = Window.width, Window.height
             rh = int(h *0.8)
@@ -269,20 +252,6 @@ class CameraScreen(Screen):
         ret, img = self.cap.read()
         img = cv2.flip(img, 1)
         img2 = cv2.addWeighted(img, 0.7, self.art_style, 0.3, 0)
-        """
-        mask = None
-        for bg in self.bgs:
-            diff = (np.linalg.norm(img.astype(float)-bg, axis=2)/3).astype(np.uint8)
-            r, mask0 = cv2.threshold(diff,6,255,cv2.THRESH_BINARY)
-            if mask is None:
-                mask = mask0
-            else:
-                mask = cv2.bitwise_or(mask, mask0)
-        mask_inv = cv2.bitwise_not(mask)
-        style2 = (cv2.bitwise_and(self.art_style, self.art_style, mask=mask_inv)*0.5).astype(np.uint8)
-        img3 = cv2.bitwise_and(img, img, mask=mask)
-        img2 = cv2.add(img3, style2)
-        """
         image = cv2.flip(img2, 0)
         self.video_texture.blit_buffer(image.tostring(), colorfmt='bgr', bufferfmt='ubyte')
         self.canvas.ask_update()
