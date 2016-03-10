@@ -61,8 +61,13 @@ def build_model():
 
 
 net = build_model()
-values = pickle.load(open('vgg19_normalized.pkl', 'rb'), encoding='latin1')['param values']
-#values = pickle.load(open('vgg19_normalized.pkl', 'rb'))['param values']
+# the modle is pickled by Python 2.7. Python 2 and Python 3 handle string and unicode differently
+# so the pickled file nedds to be handled differently in different version of Python.
+# I am on a train and no Internet access, forgot the right way to find the version.
+if bytes == str:
+    values = pickle.load(open('vgg19_normalized.pkl', 'rb'))['param values']
+else:
+    values = pickle.load(open('vgg19_normalized.pkl', 'rb'), encoding='latin1')['param values']
 lasagne.layers.set_all_param_values(net['pool5'], values)
 style_layers = ['conv1_1', 'conv2_1', 'conv3_1', 'conv4_1', 'conv5_1']
 content_layers = ['conv4_2']
@@ -250,7 +255,8 @@ def p_transfer(photo_img=default_photo_img, art_img=default_art_img, precompute=
     for x0 in transfer(400, photo_img, art_img, iters=p(2), maxfun=20, init_img=x0, photo_weight=0.001, ADAM=False):
         yield x0
     if not preview:
-        yield from transfer(640, photo_img, art_img, iters=p(1), maxfun=8, init_img=x0, photo_weight=0.001, ADAM=False, learning_rate=8.)
+        for x0 in transfer(640, photo_img, art_img, iters=p(1), maxfun=8, init_img=x0, photo_weight=0.001, ADAM=False, learning_rate=8.):
+            yield x0
         
 def precompute():
     for x in p_transfer(precompute=True):
