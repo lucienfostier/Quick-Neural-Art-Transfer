@@ -4,6 +4,9 @@ Theano/Lasagne based Neural artistic style transfer with Kivy GUI
 based on https://github.com/Lasagne/Recipes/tree/master/examples/styletransfer an implementation of the algorithm described in "A Neural Algorithm of Artistic Style" (http://arxiv.org/abs/1508.06576) by Gatys, Ecker and Bethge. 
 
 use VGG19 model http://www.robots.ox.ac.uk/~vgg/research/very_deep/
+(
+```wget https://s3.amazonaws.com/lasagne/recipes/pretrained/imagenet/vgg19_normalized.pkl ```
+to get the pickled file)
 
 Several modification are made to speed up the process. 
 1. Doing the transfer in pyramid manner to speed up and seems generating better results.
