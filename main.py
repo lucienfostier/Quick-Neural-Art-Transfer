@@ -169,12 +169,23 @@ class ProcessScreen(Screen):
         if msg:
             self.socket.close()
             self.socket = None
-        self.ids.w_info.text = (msg if msg else "完成") + ", 任意鍵結束"
-        self.ids.w_info.font_size = 64
+            self.ids.w_info.text = msg  + ", 任意鍵結束重來"
+            self.ids.w_info.font_size = 32
+        else:
+            self.state = 120
+            Clock.schedule_interval(self._tick, 1.)
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         print("process keyboard bind")
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self.is_done = True
+    
+    def _tick(self, *args):
+        if self.state == 0:
+            self._on_clicked()
+        self.ids.w_info.text = "完成！喜歡的話，請在 %d 內將畫面拍下。然後按鍵重來。"%self.state
+        self.ids.w_info.font_size = 32
+        self.state -= 1
+        
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         self._on_clicked()
@@ -190,6 +201,7 @@ class ProcessScreen(Screen):
     def on_leave(self):
         print("process leave", self._keyboard)
         self._keyboard_closed()
+        Clock.unschedule(self._tick)
         
     def _keyboard_closed(self):
         print("process keyboard closed")
@@ -232,8 +244,8 @@ class CameraScreen(Screen):
         
     def start_wait(self):
         self.state = "wait"
-        self.ids.w_info.text = "按鍵準備照相"
-        self.ids.w_info.font_size = 64
+        self.ids.w_info.text = "用鏡頭拍手機畫面，按鍵準備三秒倒數"
+        self.ids.w_info.font_size = 32
     
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         self._on_clicked()
@@ -265,7 +277,7 @@ class CameraScreen(Screen):
                 root.transition = NoTransition()
                 root.current = "process"
             if self.state%20 == 0:
-                self.ids.w_info.text = "倒數 %d 照相 (按鍵取消重選)"%(self.state//30)
+                self.ids.w_info.text = "照相倒數 %d  (按鍵取消)"%(self.state//30)
                 self.ids.w_info.font_size = 32
             self.state -=1
 
@@ -290,7 +302,7 @@ class StyleScreen(Screen):
             self.ids.w_carousel.load_next()
         else:
             self.state -= 1
-            self.ids.w_info.text = "已選擇！ 不要的話請在 %d 秒內按鍵取消"%self.state
+            self.ids.w_info.text = "已選擇！ 在 %d 秒內可按鍵重選"%self.state
             self.ids.w_info.font_size = 40
             if self.state == 0:
                 root.art_style_filename = self.ids.w_carousel.current_slide.source
@@ -309,7 +321,7 @@ class StyleScreen(Screen):
         
     def start_select(self):
         self.state = "select"
-        self.ids.w_info.text = "按鍵選擇風格"
+        self.ids.w_info.text = "按鍵選擇一種藝術風格"
         self.ids.w_info.font_size = 64
         
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
