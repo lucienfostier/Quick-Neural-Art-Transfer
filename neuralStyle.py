@@ -26,8 +26,11 @@ def imread(fn):
 
 
 from lasagne.layers import InputLayer, DenseLayer, NonlinearityLayer
-# from lasagne.layers.dnn import Conv2DDNNLayer as ConvLayer
-from lasagne.layers import Conv2DLayer as ConvLayer
+try:
+    from lasagne.layers.dnn import Conv2DDNNLayer as ConvLayer
+except:
+    print("unable to import Conv2DDNNLayer, use Conv2DLayer instead")
+    from lasagne.layers import Conv2DLayer as ConvLayer
 from lasagne.layers import Pool2DLayer as PoolLayer
 from lasagne.nonlinearities import softmax
 
