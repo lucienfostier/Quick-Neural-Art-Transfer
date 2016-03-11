@@ -3,13 +3,28 @@
 #:import Factory kivy.factory.Factory
 
 <MenuScreen>:
-    BoxLayout:
-        Button:
-            text: 'Goto settings'
-            on_press: root.manager.current = 'camera'
-        Button:
-            text: 'style'
-            on_press: root.manager.current = "style"
+    FloatLayout:
+        orientation: 'vertical'
+        Label:
+            id: w_info
+            font_name: 'NotoSansCJK.ttc'
+            size_hint: (1, .2,)
+            pos_hint: {'x': .0, 'y':.8}
+        Label:
+            id: w_plus
+            color: 0,1,0,1
+            text: "+"
+            font_size: 72
+            size_hint: (.2, .2)
+            pos_hint: {'x': .08, 'y':.3}
+        Label:
+            id: w_equal
+            text: "="
+            font_size:72
+            size_hint: (.2, .2)
+            pos_hint: {'x': .265, 'y':.3}
+
+
 <CameraScreen>
     FloatLayout:
         orientation: 'vertical'

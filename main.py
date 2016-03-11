@@ -39,15 +39,126 @@ def prep_image(im, IMAGE_W, IMAGE_H):
 
     return rawim
 
+
+def get_img(img):
+    print(img)
+    if isinstance(img, str):
+        img = cv2.imread(img)
+    print(img.shape)
+    return prep_image(img, 640,480)
+
+class Demo_content:
+    def __init__(self, photo_content, art_style_filename, output):
+        self.photo_content = get_img(photo_content)
+        self.art_style_filename = art_style_filename
+        self.output = get_img(output)
+    @property
+    def art_style(self):
+        return get_img(self.art_style_filename)
+
+    def update(self, w):
+        w.style_texture.blit_buffer(cv2.flip(self.art_style, 0).tostring(), colorfmt='bgr', bufferfmt='ubyte')
+        w.photo_texture.blit_buffer(cv2.flip(self.photo_content, 0).tostring(), colorfmt='bgr', bufferfmt='ubyte')
+        w.output_texture.blit_buffer(cv2.flip(self.output, 0).tostring(), colorfmt='bgr', bufferfmt='ubyte')
+
+
+demo_list = [Demo_content(*x) for x in  [("content/tjw1.jpg", "styles/starry_night.jpg", "output/tjw_a.png"), ("content/ndhu2.jpg", "styles/lundstroem.jpg", "output/ndhu_a.png")]]
+
+
+
 # Create both screens. Please note the root.manager.current: this is how
 # you can control the ScreenManager from kv. Each screen has by default a
 # property manager that gives you the instance of the ScreenManager used.
 
-# Declare both screens
+# Declare  screens
 root = None
-class MenuScreen(Screen):
-    pass
 
+
+class MenuScreen(Screen):
+    def __init__(self, **kwargs):
+        super(Screen, self).__init__( **kwargs)
+        self.output_texture = Texture.create(size=(640, 480), colorfmt='rgb')
+        self.style_texture = Texture.create(size=(640, 480), colorfmt='rgb')
+        self.photo_texture = Texture.create(size=(640, 480), colorfmt='rgb')
+        with self.canvas:
+            #self.texture = self.video_texture
+            self.output_rect = Rectangle(texture=self.output_texture, pos=(-5,0), size=(1, 1))
+            self.style_rect = Rectangle(texture=self.style_texture, pos=(-5,0), size=(1, 1))
+            self.photo_rect = Rectangle(texture=self.photo_texture, pos=(-5,0), size=(1, 1))
+        self._keyboard = None
+    
+    def on_pre_enter(self):
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        Clock.schedule_interval(self._tick, 10.)
+        self.pic_num = 0
+        self.ids.w_info.text = "按鍵開始"
+        self.ids.w_info.font_size=64
+        self.anim()
+        
+    def anim(self):
+        demo_list[self.pic_num].update(self)
+        self.pic_num = (self.pic_num+1)%len(demo_list)
+        self.ids.w_plus.opacity = 0
+        self.ids.w_equal.opacity = 0
+        
+        w, h = Window.width, Window.height
+        rh = int(h *0.8)
+        rw = rh*4//3
+        self.output_rect.pos =(w,0.1*h)
+        
+        rh2 = int(h *0.3)
+        rw2 = rh2*4//3
+        self.photo_rect.pos =( -rw2,rh2+int(0.15*h))
+        self.style_rect.pos =( -rw2,int(0.05*h))
+        self.style_rect.size = (rw2, rh2)
+        self.photo_rect.size = (rw2, rh2)
+        self.canvas.ask_update()
+        
+        rh = int(h *0.6)
+        rw = rh*4//3
+        self.output_rect.size = (rw, rh)
+        xpos2 = int((w-(rw+rw2))/3)
+        idle1 = Animation(duration=2.5)
+        idle2 = Animation(duration=0.5)
+        idle3 = Animation(duration=0.5)
+        idle4 = Animation(duration=1.5)
+        idle5 = Animation(duration=2.)
+        move1 = Animation(pos=(xpos2, rh2+int(0.15*h)), duration=1.5)
+        move2 = Animation(pos=(xpos2, int(0.05*h)) ,duration=1.5)
+        move3 = Animation(pos=(3*xpos2+rw2,int(0.1*h)), size=(rw, rh), duration=1.5)
+        (idle3 + move1).start(self.photo_rect)
+        (idle2 + move2).start(self.style_rect)
+        (idle1 + move3).start(self.output_rect)
+        (idle4+Animation(opacity=1, duration=1.)).start(self.ids.w_plus)
+        (idle5+Animation(opacity=1, duration=1.)).start(self.ids.w_equal)
+        
+        
+    def _tick(self, *args):
+        self.anim()
+        
+    def on_leave(self):
+        print("menu leave", self._keyboard)
+        self._keyboard_closed()
+        Clock.unschedule(self._tick)
+        
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        self._on_clicked()
+    
+    def on_touch_down(self, touch):
+        self._on_clicked()
+        
+    def _on_clicked(self):
+            root.transition = SlideTransition(duration=1.)
+            root.current = "style"
+
+    def _keyboard_closed(self):
+        print("menu keyboard closed")
+        if self._keyboard:
+            print("process keyboard unbind")
+            self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+            self._keyboard = None
 
 class ProcessScreen(Screen):
     def __init__(self, **kwargs):
@@ -57,6 +168,7 @@ class ProcessScreen(Screen):
         self.output_texture = Texture.create(size=(640, 480), colorfmt='rgb')
         self.style_texture = Texture.create(size=(640, 480), colorfmt='rgb')
         self.photo_texture = Texture.create(size=(640, 480), colorfmt='rgb')
+        
         with self.canvas:
             #self.texture = self.video_texture
             self.output_rect = Rectangle(texture=self.output_texture, pos=(-5,0), size=(1, 1))
@@ -90,7 +202,7 @@ class ProcessScreen(Screen):
         idle3 = Animation(duration=3.)
         move1 = Animation(pos=(xpos2, rh2+int(0.15*h)), duration=2.)
         move2 = Animation(pos=(xpos2, int(0.05*h)) ,duration=2.)
-        move3 = Animation(pos=(2*xpos2+rw2,int(0.1*h)), size=(rw, rh), duration=2.)
+        move3 = Animation(pos=(3*xpos2+rw2,int(0.1*h)), size=(rw, rh), duration=2.)
         (idle3 + move1).start(self.photo_rect)
         (idle2 + move2).start(self.style_rect)
         (idle1 + move3).start(self.output_rect)
@@ -108,9 +220,7 @@ class ProcessScreen(Screen):
         threading.Thread(target = self.process).start()
         self.start_anim()
         self._keyboard = None
-
-
-        
+                
     def process(self):
         self.socket.send_string(root.art_style_filename, zmq.SNDMORE)
         self.socket.setsockopt(zmq.RCVTIMEO, 15000)
@@ -196,7 +306,7 @@ class ProcessScreen(Screen):
     def _on_clicked(self):
         if self.is_done:
             root.transition = SlideTransition(duration=1.)
-            root.current = "style"
+            root.current = "menu"
         
     def on_leave(self):
         print("process leave", self._keyboard)
@@ -254,13 +364,13 @@ class CameraScreen(Screen):
         self._on_clicked()
         
     def _on_clicked(self):
+        print("self.state", self.state)
         if self.state is "wait":
             self.state = 3*20
         else:
             self.start_wait()
 
     def _tick(self, *args):
-        
         ret, img = self.cap.read()
         img = cv2.flip(img, 1)
         img2 = cv2.addWeighted(img, 0.7, self.art_style, 0.3, 0)
@@ -345,8 +455,8 @@ class ArtApp(App):
     def build(self):
         global root
         root = ScreenManager(transition=SlideTransition(duration=1.))
-        root.add_widget(StyleScreen(name="style"))
         root.add_widget(MenuScreen(name='menu'))
+        root.add_widget(StyleScreen(name="style"))
         root.add_widget(CameraScreen(name='camera'))
         root.add_widget(ProcessScreen(name='process'))
         root.art_style_filename = None
