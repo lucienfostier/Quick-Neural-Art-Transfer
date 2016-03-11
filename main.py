@@ -96,11 +96,12 @@ class MenuScreen(Screen):
     def on_pre_enter(self):
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
-        Clock.schedule_interval(self._tick, 10.)
         self.pic_num = 0
+        self.anim()
+        Clock.schedule_interval(self._tick, 10.8)
         self.ids.w_info.text = "按鍵開始"
         self.ids.w_info.font_size=64
-        self.anim()
+        
         
     def anim(self):
         self.pic_num = (self.pic_num+1)%len(demo_list)
@@ -125,19 +126,36 @@ class MenuScreen(Screen):
         rw = rh*4//3
         self.output_rect.size = (rw, rh)
         xpos2 = int((w-(rw+rw2))/3)
-        idle1 = Animation(duration=2.5)
+        
+        idle3 = Animation(duration=2.5)
+        idle3c = Animation(duration=5.5)
+        
         idle2 = Animation(duration=0.5)
-        idle3 = Animation(duration=0.5)
+        idle2c = Animation(duration=7.5)
+        
+        idle1 = Animation(duration=0.5)
+        idle1c = Animation(duration=7.5)
+        
         idle4 = Animation(duration=1.5)
+        idle4c = Animation(duration=6.5)
+        
         idle5 = Animation(duration=2.)
+        idle5c = Animation(duration=6.0)
+        
         move1 = Animation(pos=(xpos2, rh2+int(0.15*h)), duration=1.5)
+        move1_back = Animation(pos=(-rw, rh2+int(0.15*h)), duration=0.5)
+        
         move2 = Animation(pos=(xpos2, int(0.05*h)) ,duration=1.5)
+        move2_back = Animation(pos=(-rw, int(0.05*h)) ,duration=0.5)
+        
         move3 = Animation(pos=(3*xpos2+rw2,int(0.1*h)), size=(rw, rh), duration=1.5)
-        (idle3 + move1).start(self.photo_rect)
-        (idle2 + move2).start(self.style_rect)
-        (idle1 + move3).start(self.output_rect)
-        (idle4+Animation(opacity=1, duration=1.)).start(self.ids.w_plus)
-        (idle5+Animation(opacity=1, duration=1.)).start(self.ids.w_equal)
+        move3_back = Animation(pos=(w,int(0.1*h)), size=(rw, rh), duration=0.5)
+        
+        (idle1 + move1 + idle1c + move1_back).start(self.photo_rect)
+        (idle2 + move2 + idle2c + move2_back).start(self.style_rect)
+        (idle3 + move3 + idle3c + move3_back).start(self.output_rect)
+        (idle4+Animation(opacity=1, duration=1.)+idle4c+Animation(opacity=0, duration=1.)).start(self.ids.w_plus)
+        (idle5+Animation(opacity=1, duration=1.)+idle5c+Animation(opacity=0, duration=1.)).start(self.ids.w_equal)
         
         
     def _tick(self, *args):
@@ -191,6 +209,8 @@ class ProcessScreen(Screen):
         rw = rh*4//3
         self.output_rect.pos =((w-rw)//2,0)
         self.output_rect.size = (rw, rh)
+        self.ids.w_equal.opacity = 0.
+        self.ids.w_plus.opacity = 0.
         
         rh2 = int(h *0.3)
         rw2 = rh2*4//3
@@ -206,12 +226,16 @@ class ProcessScreen(Screen):
         idle1 = Animation(duration=1.)
         idle2 = Animation(duration=2.)
         idle3 = Animation(duration=3.)
+        idle4 = Animation(duration=4.)
+        idle5 = Animation(duration=5.)
         move1 = Animation(pos=(xpos2, rh2+int(0.15*h)), duration=2.)
         move2 = Animation(pos=(xpos2, int(0.05*h)) ,duration=2.)
         move3 = Animation(pos=(3*xpos2+rw2,int(0.1*h)), size=(rw, rh), duration=2.)
         (idle3 + move1).start(self.photo_rect)
         (idle2 + move2).start(self.style_rect)
         (idle1 + move3).start(self.output_rect)
+        (idle4+Animation(opacity=1, duration=1.)).start(self.ids.w_plus)
+        (idle5+Animation(opacity=1, duration=1.)).start(self.ids.w_equal)
         
     def on_pre_enter(self):
         self.is_done = False
@@ -301,7 +325,7 @@ class ProcessScreen(Screen):
     def _tick(self, *args):
         if self.state == 0:
             self._on_clicked()
-        self.ids.w_info.text = "完成！喜歡的話，在 %d秒內將畫面拍下，或按鍵重來。"%self.state
+        self.ids.w_info.text = "完成！按鍵繼續。喜歡的話，可將畫面拍下(剩%3d秒)。"%self.state
         self.ids.w_info.font_size = 30
         self.state -= 1
         
