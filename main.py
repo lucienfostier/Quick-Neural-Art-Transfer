@@ -62,7 +62,13 @@ class Demo_content:
         w.output_texture.blit_buffer(cv2.flip(self.output, 0).tostring(), colorfmt='bgr', bufferfmt='ubyte')
 
 
-demo_list = [Demo_content(*x) for x in  [("content/tjw1.jpg", "styles/starry_night.jpg", "output/tjw_a.png"), ("content/ndhu2.jpg", "styles/lundstroem.jpg", "output/ndhu_a.png")]]
+demo_list = [Demo_content(*x) for x in  [("content/tjw2.jpg", "styles/Pablo_Picasso1.jpg", "output/tjw_a.png"), 
+                                         ("content/ndhu2.jpg", "styles/9a4f9c23dbd75d8f836d22e92a3b5fc52ba68167_original.jpg", "output/ndhu_a.png"),
+                                         ("content/golden_gate.jpg", "styles/gh.jpg", "output/c2.png"),
+                                         ("content/tjw2.jpg", "styles/9a4f9c23dbd75d8f836d22e92a3b5fc52ba68167_original.jpg", "output/tjw_f.png"),
+                                         ("content/tjw2.jpg", "styles/JellyBellyBeans.jpg", "output/tjw_c.png"),
+                                         ("content/ndhu2.jpg", "styles/Gucn_20110326224654110840Pic2.jpg", "output/ndhu_a.png"),
+                                         ("content/smile_face.jpg", "styles/gh.jpg", "output/c5.png")]]
 
 
 
