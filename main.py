@@ -67,7 +67,7 @@ demo_list = [Demo_content(*x) for x in  [("content/tjw2.jpg", "styles/Pablo_Pica
                                          ("content/golden_gate.jpg", "styles/gh.jpg", "output/c2.png"),
                                          ("content/tjw2.jpg", "styles/9a4f9c23dbd75d8f836d22e92a3b5fc52ba68167_original.jpg", "output/tjw_f.png"),
                                          ("content/tjw2.jpg", "styles/JellyBellyBeans.jpg", "output/tjw_c.png"),
-                                         ("content/ndhu2.jpg", "styles/Gucn_20110326224654110840Pic2.jpg", "output/ndhu_a.png"),
+                                         ("content/ndhu2.jpg", "styles/Gucn_20110326224654110840Pic2.jpg", "output/ndhu_g.png"),
                                          ("content/smile_face.jpg", "styles/gh.jpg", "output/c5.png")]]
 
 
@@ -370,6 +370,7 @@ class CameraScreen(Screen):
         
     def on_pre_enter(self):
         print("art style", root.art_style_filename)
+        self.timeout=600*20
         self.art_style = style = prep_image(cv2.imread(root.art_style_filename), 640, 480)
         self.start_wait()
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
@@ -400,6 +401,7 @@ class CameraScreen(Screen):
         self._on_clicked()
         
     def _on_clicked(self):
+        self.timeout = 600*20
         print("self.state", self.state)
         if self.state is "wait":
             self.state = 3*20
@@ -407,6 +409,7 @@ class CameraScreen(Screen):
             self.start_wait()
 
     def _tick(self, *args):
+        self.timeout -= 1
         ret, img = self.cap.read()
         img = cv2.flip(img, 1)
         img2 = cv2.addWeighted(img, 0.7, self.art_style, 0.3, 0)
@@ -417,7 +420,6 @@ class CameraScreen(Screen):
         
         if self.state is not 'wait':
             if self.state == 0:
-                print("照相")
                 root.photo_content = img2
                 root.art_style = self.art_style
                 root.transition = NoTransition()
@@ -426,6 +428,10 @@ class CameraScreen(Screen):
                 self.ids.w_info.text = "照相倒數 %d  (按鍵取消)"%(self.state//30)
                 self.ids.w_info.font_size = 32
             self.state -=1
+        else:
+            if self.timeout < 0:
+                root.transition = SlideTransition(duration=.1)
+                root.current = 'menu'
 
 class StyleScreen(Screen):
     def __init__(self, **kwargs):
@@ -438,7 +444,7 @@ class StyleScreen(Screen):
         self.state = "select"
     
     def on_pre_enter(self):
-        Clock.schedule_interval(self._tick, 1.)
+        Clock.schedule_interval(self._tick, 2.)
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self.start_select()
@@ -446,6 +452,7 @@ class StyleScreen(Screen):
     def _tick(self, *args):
         if self.state is "select":
             self.ids.w_carousel.load_next()
+            self.ids.w_info.text = "按鍵選擇風格-%2d"%(self.ids.w_carousel.index+1)
         else:
             self.state -= 1
             self.ids.w_info.text = "已選擇！ 在 %d 秒內可按鍵重選"%self.state
@@ -467,7 +474,7 @@ class StyleScreen(Screen):
         
     def start_select(self):
         self.state = "select"
-        self.ids.w_info.text = "按鍵選擇一種藝術風格"
+        self.ids.w_info.text = "按鍵選擇藝術風格"
         self.ids.w_info.font_size = 64
         
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
