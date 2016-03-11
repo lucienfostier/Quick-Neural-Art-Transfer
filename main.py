@@ -97,8 +97,8 @@ class MenuScreen(Screen):
         self.anim()
         
     def anim(self):
-        demo_list[self.pic_num].update(self)
         self.pic_num = (self.pic_num+1)%len(demo_list)
+        demo_list[self.pic_num].update(self)
         self.ids.w_plus.opacity = 0
         self.ids.w_equal.opacity = 0
         
@@ -220,6 +220,7 @@ class ProcessScreen(Screen):
         threading.Thread(target = self.process).start()
         self.start_anim()
         self._keyboard = None
+        self.output_image = None
                 
     def process(self):
         self.socket.send_string(root.art_style_filename, zmq.SNDMORE)
@@ -258,6 +259,7 @@ class ProcessScreen(Screen):
         N = 5
         #image = skimage.transform.resize(img, (480, 640), preserve_range=True).astype(np.uint8)
         image = cv2.resize(img, (640,480), interpolation=cv2.INTER_LANCZOS4)
+        self.output_image = image
         image = cv2.flip(image, 0)
         
         anim = Animation(value=self.counter/N, duration=0.5)
@@ -281,6 +283,7 @@ class ProcessScreen(Screen):
             self.socket = None
             self.ids.w_info.text = msg  + ", 任意鍵結束重來"
             self.ids.w_info.font_size = 32
+            self.state = 1000
         else:
             self.state = 120
             Clock.schedule_interval(self._tick, 1.)
@@ -292,8 +295,8 @@ class ProcessScreen(Screen):
     def _tick(self, *args):
         if self.state == 0:
             self._on_clicked()
-        self.ids.w_info.text = "完成！喜歡的話，請在 %d 內將畫面拍下。然後按鍵重來。"%self.state
-        self.ids.w_info.font_size = 32
+        self.ids.w_info.text = "完成！喜歡的話，在 %d秒內將畫面拍下，或按鍵重來。"%self.state
+        self.ids.w_info.font_size = 30
         self.state -= 1
         
 
@@ -304,9 +307,12 @@ class ProcessScreen(Screen):
         self._on_clicked()
         
     def _on_clicked(self):
+        global demo_list
         if self.is_done:
             root.transition = SlideTransition(duration=1.)
             root.current = "menu"
+            if self.output_image is not None and self.state < 100:
+                demo_list= [Demo_content(root.photo_content, root.art_style_filename, self.output_image)]+demo_list[:9]
         
     def on_leave(self):
         print("process leave", self._keyboard)
