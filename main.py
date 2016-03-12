@@ -1,6 +1,7 @@
+# encoding: utf-8
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition, SwapTransition, NoTransition
+from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition, SwapTransition, NoTransition, FadeTransition
 from kivy.uix.carousel import Carousel
 from kivy.uix.image import Image
 from kivy.clock import Clock, mainthread
@@ -108,6 +109,8 @@ class AppScreen(Screen):
 def Idle(n):
     return Animation(duration=n)
 
+from random import randint
+
 class MenuScreen(AppScreen):
     def __init__(self, **kwargs):
         super(AppScreen, self).__init__( **kwargs)
@@ -121,7 +124,7 @@ class MenuScreen(AppScreen):
             self.photo_rect = Rectangle(texture=self.photo_texture, pos=(-5,0), size=(1, 1))
     
     def _on_pre_enter(self):
-        self.pic_num = 0
+        self.pic_num = randint(0, len(demo_list)-1)
         self.anim()
         Clock.schedule_interval(self._tick, 10.8)
         self.ids.w_info.text = "按鍵開始"
@@ -172,8 +175,8 @@ class MenuScreen(AppScreen):
         self.anim()
         
     def _on_clicked(self):
-            root.transition = SlideTransition(duration=1.)
-            root.current = "style"
+        root.transition = FadeTransition(duration=1.)
+        root.current = "style"
 
 class ProcessScreen(AppScreen):
     def __init__(self, **kwargs):
@@ -313,7 +316,7 @@ class ProcessScreen(AppScreen):
     def _on_clicked(self):
         global demo_list
         if self.is_done:
-            root.transition = SlideTransition(duration=1.)
+            root.transition = FadeTransition(duration=1.)
             root.current = "menu"
             if self.output_image is not None and self.state < 100:
                 demo_list= [Demo_content(root.photo_content, root.art_style_filename, self.output_image)]+demo_list[:9]
@@ -353,7 +356,7 @@ class CameraScreen(AppScreen):
         self.timeout -= 1
         ret, img = self.cap.read()
         img = cv2.flip(img, 1)
-        img2 = cv2.addWeighted(img, 0.7, self.art_style, 0.3, 0)
+        img2 = cv2.addWeighted(img, 0.8, self.art_style, 0.2, 0)
         image = cv2.flip(img2, 0)
         self.video_texture.blit_buffer(image.tostring(), colorfmt='bgr', bufferfmt='ubyte')
         self.canvas.ask_update()
@@ -396,6 +399,7 @@ class StyleScreen(AppScreen):
             self.ids.w_info.font_size = 40
             if self.state == 0:
                 root.art_style_filename = self.ids.w_carousel.current_slide.source
+                root.transition = SlideTransition(duration = 1.)
                 root.current = 'camera'
 
     def start_select(self):
