@@ -29,14 +29,11 @@ def prep_image(im, IMAGE_W, IMAGE_H):
         im = skimage.transform.resize(im, (IMAGE_H, w*IMAGE_H//h), preserve_range=True)
     else:
         im = skimage.transform.resize(im, (h*IMAGE_W//w, IMAGE_W), preserve_range=True)
-
     # Central crop
     h, w, _ = im.shape
     im = im[h//2-IMAGE_H//2:h//2+IMAGE_H//2, w//2-IMAGE_W//2:w//2+IMAGE_W//2]
-    
     rawim = im.astype('uint8')
     print(rawim.dtype, im.dtype)
-
     return rawim
 
 
@@ -52,6 +49,7 @@ class Demo_content:
         self.photo_content = get_img(photo_content)
         self.art_style_filename = art_style_filename
         self.output = get_img(output)
+        
     @property
     def art_style(self):
         return get_img(self.art_style_filename)
@@ -63,7 +61,7 @@ class Demo_content:
 
 
 demo_list = [Demo_content(*x) for x in  [("content/tjw2.jpg", "styles/Pablo_Picasso1.jpg", "output/tjw_a.png"), 
-                                         ("content/ndhu2.jpg", "styles/9a4f9c23dbd75d8f836d22e92a3b5fc52ba68167_original.jpg", "output/ndhu_a.png"),
+                                         ("content/ndhu2.jpg", "styles/fullcolor_by_maadmann-d78r5e6.jpg", "output/ndhu_a.png"),
                                          ("content/golden_gate.jpg", "styles/gh.jpg", "output/c2.png"),
                                          ("content/tjw2.jpg", "styles/9a4f9c23dbd75d8f836d22e92a3b5fc52ba68167_original.jpg", "output/tjw_f.png"),
                                          ("content/tjw2.jpg", "styles/JellyBellyBeans.jpg", "output/tjw_c.png"),
@@ -78,11 +76,41 @@ demo_list = [Demo_content(*x) for x in  [("content/tjw2.jpg", "styles/Pablo_Pica
 
 # Declare  screens
 root = None
-
-
-class MenuScreen(Screen):
+class AppScreen(Screen):
     def __init__(self, **kwargs):
         super(Screen, self).__init__( **kwargs)
+        self._keyboard = None
+    
+    def on_pre_enter(self):
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+        self._on_pre_enter()
+    
+    def on_leave(self):
+        print("%s leave"%self.name, self._keyboard)
+        self._keyboard_closed()
+        Clock.unschedule(self._tick)
+        
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        self._on_clicked()
+    
+    def on_touch_down(self, touch):
+        self._on_clicked()
+
+    def _keyboard_closed(self):
+        print("%s keyboard closed"%self.name)
+        if self._keyboard:
+            print("%s keyboard unbind"%self.name)
+            self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+            self._keyboard = None
+        
+def Idle(n):
+    return Animation(duration=n)
+
+class MenuScreen(AppScreen):
+    def __init__(self, **kwargs):
+        super(AppScreen, self).__init__( **kwargs)
         self.output_texture = Texture.create(size=(640, 480), colorfmt='rgb')
         self.style_texture = Texture.create(size=(640, 480), colorfmt='rgb')
         self.photo_texture = Texture.create(size=(640, 480), colorfmt='rgb')
@@ -91,11 +119,8 @@ class MenuScreen(Screen):
             self.output_rect = Rectangle(texture=self.output_texture, pos=(-5,0), size=(1, 1))
             self.style_rect = Rectangle(texture=self.style_texture, pos=(-5,0), size=(1, 1))
             self.photo_rect = Rectangle(texture=self.photo_texture, pos=(-5,0), size=(1, 1))
-        self._keyboard = None
     
-    def on_pre_enter(self):
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+    def _on_pre_enter(self):
         self.pic_num = 0
         self.anim()
         Clock.schedule_interval(self._tick, 10.8)
@@ -127,21 +152,6 @@ class MenuScreen(Screen):
         self.output_rect.size = (rw, rh)
         xpos2 = int((w-(rw+rw2))/3)
         
-        idle3 = Animation(duration=2.5)
-        idle3c = Animation(duration=5.5)
-        
-        idle2 = Animation(duration=0.5)
-        idle2c = Animation(duration=7.5)
-        
-        idle1 = Animation(duration=0.5)
-        idle1c = Animation(duration=7.5)
-        
-        idle4 = Animation(duration=1.5)
-        idle4c = Animation(duration=6.5)
-        
-        idle5 = Animation(duration=2.)
-        idle5c = Animation(duration=6.0)
-        
         move1 = Animation(pos=(xpos2, rh2+int(0.15*h)), duration=1.5)
         move1_back = Animation(pos=(-rw, rh2+int(0.15*h)), duration=0.5)
         
@@ -151,42 +161,23 @@ class MenuScreen(Screen):
         move3 = Animation(pos=(3*xpos2+rw2,int(0.1*h)), size=(rw, rh), duration=1.5)
         move3_back = Animation(pos=(w,int(0.1*h)), size=(rw, rh), duration=0.5)
         
-        (idle1 + move1 + idle1c + move1_back).start(self.photo_rect)
-        (idle2 + move2 + idle2c + move2_back).start(self.style_rect)
-        (idle3 + move3 + idle3c + move3_back).start(self.output_rect)
-        (idle4+Animation(opacity=1, duration=1.)+idle4c+Animation(opacity=0, duration=1.)).start(self.ids.w_plus)
-        (idle5+Animation(opacity=1, duration=1.)+idle5c+Animation(opacity=0, duration=1.)).start(self.ids.w_equal)
+        (Idle(0.5) + move1 + Idle(7.5) + move1_back).start(self.photo_rect)
+        (Idle(0.5) + move2 + Idle(7.5) + move2_back).start(self.style_rect)
+        (Idle(2.5) + move3 + Idle(5.5) + move3_back).start(self.output_rect)
+        (Idle(1.5) + Animation(opacity=1, duration=1.) + Idle(6.5) + Animation(opacity=0, duration=1.)).start(self.ids.w_plus)
+        (Idle(2.) + Animation(opacity=1, duration=1.) + Idle(6.) + Animation(opacity=0, duration=1.)).start(self.ids.w_equal)
         
         
     def _tick(self, *args):
         self.anim()
         
-    def on_leave(self):
-        print("menu leave", self._keyboard)
-        self._keyboard_closed()
-        Clock.unschedule(self._tick)
-        
-
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        self._on_clicked()
-    
-    def on_touch_down(self, touch):
-        self._on_clicked()
-        
     def _on_clicked(self):
             root.transition = SlideTransition(duration=1.)
             root.current = "style"
 
-    def _keyboard_closed(self):
-        print("menu keyboard closed")
-        if self._keyboard:
-            print("process keyboard unbind")
-            self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-            self._keyboard = None
-
-class ProcessScreen(Screen):
+class ProcessScreen(AppScreen):
     def __init__(self, **kwargs):
-        super(Screen, self).__init__( **kwargs)
+        super(AppScreen, self).__init__( **kwargs)
         self.context = zmq.Context()
         self.socket = None
         self.output_texture = Texture.create(size=(640, 480), colorfmt='rgb')
@@ -199,7 +190,6 @@ class ProcessScreen(Screen):
             self.style_rect = Rectangle(texture=self.style_texture, pos=(-5,0), size=(1, 1))
             self.photo_rect = Rectangle(texture=self.photo_texture, pos=(-5,0), size=(1, 1))
         self.counter = 0
-        self._keyboard = None
         
     def start_anim(self):
         self.style_texture.blit_buffer(cv2.flip(root.art_style, 0).tostring(), colorfmt='bgr', bufferfmt='ubyte')
@@ -223,21 +213,16 @@ class ProcessScreen(Screen):
         rh = int(h *0.6)
         rw = rh*4//3
         xpos2 = int((w-(rw+rw2))/3)
-        idle1 = Animation(duration=1.)
-        idle2 = Animation(duration=2.)
-        idle3 = Animation(duration=3.)
-        idle4 = Animation(duration=4.)
-        idle5 = Animation(duration=5.)
         move1 = Animation(pos=(xpos2, rh2+int(0.15*h)), duration=2.)
         move2 = Animation(pos=(xpos2, int(0.05*h)) ,duration=2.)
         move3 = Animation(pos=(3*xpos2+rw2,int(0.1*h)), size=(rw, rh), duration=2.)
-        (idle3 + move1).start(self.photo_rect)
-        (idle2 + move2).start(self.style_rect)
-        (idle1 + move3).start(self.output_rect)
-        (idle4+Animation(opacity=1, duration=1.)).start(self.ids.w_plus)
-        (idle5+Animation(opacity=1, duration=1.)).start(self.ids.w_equal)
+        (Idle(3.) + move1).start(self.photo_rect)
+        (Idle(2.) + move2).start(self.style_rect)
+        (Idle(1.) + move3).start(self.output_rect)
+        (Idle(4.) + Animation(opacity=1, duration=1.)).start(self.ids.w_plus)
+        (Idle(5.) + Animation(opacity=1, duration=1.)).start(self.ids.w_equal)
         
-    def on_pre_enter(self):
+    def _on_pre_enter(self):
         self.is_done = False
         self.ids.w_pb.value = 0.
         if self.socket is None:
@@ -249,7 +234,6 @@ class ProcessScreen(Screen):
         self.update_progress(root.photo_content)
         threading.Thread(target = self.process).start()
         self.start_anim()
-        self._keyboard = None
         self.output_image = None
                 
     def process(self):
@@ -317,24 +301,14 @@ class ProcessScreen(Screen):
         else:
             self.state = 120
             Clock.schedule_interval(self._tick, 1.)
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
-        print("process keyboard bind")
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self.is_done = True
     
     def _tick(self, *args):
         if self.state == 0:
             self._on_clicked()
-        self.ids.w_info.text = "完成！按鍵繼續。喜歡的話，可將畫面拍下(剩%3d秒)。"%self.state
+        self.ids.w_info.text = "完成！可將畫面拍下(剩%3d秒)。按鍵重新開始。"%self.state
         self.ids.w_info.font_size = 30
         self.state -= 1
-        
-
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        self._on_clicked()
-    
-    def on_touch_down(self, touch):
-        self._on_clicked()
         
     def _on_clicked(self):
         global demo_list
@@ -343,23 +317,10 @@ class ProcessScreen(Screen):
             root.current = "menu"
             if self.output_image is not None and self.state < 100:
                 demo_list= [Demo_content(root.photo_content, root.art_style_filename, self.output_image)]+demo_list[:9]
-        
-    def on_leave(self):
-        print("process leave", self._keyboard)
-        self._keyboard_closed()
-        Clock.unschedule(self._tick)
-        
-    def _keyboard_closed(self):
-        print("process keyboard closed")
-        if self._keyboard:
-            print("process keyboard unbind")
-            self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-            self._keyboard = None
 
-
-class CameraScreen(Screen):
+class CameraScreen(AppScreen):
     def __init__(self, **kwargs):
-        super(Screen, self).__init__( **kwargs)
+        super(AppScreen, self).__init__( **kwargs)
         cap = self.cap = cv2.VideoCapture(0)
         self.video_texture = Texture.create(size=(640, 480), colorfmt='rgb')
         with self.canvas:
@@ -368,37 +329,17 @@ class CameraScreen(Screen):
             rw = rh*4//3
             Rectangle(texture=self.video_texture, pos=( (w-rw)//2,0), size=(rw, rh))
         
-    def on_pre_enter(self):
+    def _on_pre_enter(self):
         print("art style", root.art_style_filename)
         self.timeout=600*20
         self.art_style = style = prep_image(cv2.imread(root.art_style_filename), 640, 480)
         self.start_wait()
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
         Clock.schedule_interval(self._tick, 1./20)
-        
-    def on_leave(self):
-        print("camera leave")
-        Clock.unschedule(self._tick)
-        self._keyboard_closed()
-        
-    def _keyboard_closed(self):
-        print("camera keyboard closed")
-        if self._keyboard:
-            print("cambera keyboard unbind")
-            self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-            self._keyboard = None
         
     def start_wait(self):
         self.state = "wait"
         self.ids.w_info.text = "用鏡頭拍手機畫面，按鍵準備三秒倒數"
         self.ids.w_info.font_size = 32
-    
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        self._on_clicked()
-    
-    def on_touch_down(self, touch):
-        self._on_clicked()
         
     def _on_clicked(self):
         self.timeout = 600*20
@@ -417,7 +358,6 @@ class CameraScreen(Screen):
         self.video_texture.blit_buffer(image.tostring(), colorfmt='bgr', bufferfmt='ubyte')
         self.canvas.ask_update()
         img2 = img
-        
         if self.state is not 'wait':
             if self.state == 0:
                 root.photo_content = img2
@@ -433,20 +373,17 @@ class CameraScreen(Screen):
                 root.transition = SlideTransition(duration=.1)
                 root.current = 'menu'
 
-class StyleScreen(Screen):
+class StyleScreen(AppScreen):
     def __init__(self, **kwargs):
-        super(Screen, self).__init__( **kwargs)
+        super(AppScreen, self).__init__( **kwargs)
         for f in glob.glob("styles/*.*"):
             src = f
             image = Image(source=src, allow_stretch=True)
             self.ids.w_carousel.add_widget(image)
-        self._keyboard = None
         self.state = "select"
     
-    def on_pre_enter(self):
+    def _on_pre_enter(self):
         Clock.schedule_interval(self._tick, 2.)
-        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self.start_select()
         
     def _tick(self, *args):
@@ -460,41 +397,21 @@ class StyleScreen(Screen):
             if self.state == 0:
                 root.art_style_filename = self.ids.w_carousel.current_slide.source
                 root.current = 'camera'
-                
-    def _keyboard_closed(self):
-        print("style keyboard closed")
-        if self._keyboard:
-            print("style keyboard unbind")
-            self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-            self._keyboard = None
 
-    def on_leave(self):
-        Clock.unschedule(self._tick)
-        self._keyboard_closed()
-        
     def start_select(self):
         self.state = "select"
         self.ids.w_info.text = "按鍵選擇藝術風格"
         self.ids.w_info.font_size = 64
-        
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        self._on_clicked()
-    
-    def on_touch_down(self, touch):
-        self._on_clicked()
         
     def _on_clicked(self):
         if self.state is "select":
             self.state = 3
         else:
             self.start_select()
-            
         return True
 
 
-
 class ArtApp(App):
-
     def build(self):
         global root
         root = ScreenManager(transition=SlideTransition(duration=1.))
