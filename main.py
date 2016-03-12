@@ -20,6 +20,8 @@ from time import sleep, time
 import zmq
 from zmq_array import send_array, recv_array
 
+if str != bytes:
+    basestring = str
 
 def prep_image(im, IMAGE_W, IMAGE_H):
     if len(im.shape) == 2:
@@ -40,7 +42,7 @@ def prep_image(im, IMAGE_W, IMAGE_H):
 
 def get_img(img):
     print(img)
-    if isinstance(img, str):
+    if isinstance(img, basestring):
         img = cv2.imread(img)
     print(img.shape)
     return prep_image(img, 640,480)

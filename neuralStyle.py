@@ -68,9 +68,13 @@ net = build_model()
 # so the pickled file nedds to be handled differently in different version of Python.
 # I am on a train and no Internet access, forgot the right way to find the version.
 if bytes == str:
+    # Python 2
     values = pickle.load(open('vgg19_normalized.pkl', 'rb'))['param values']
 else:
+    #Python 3
     values = pickle.load(open('vgg19_normalized.pkl', 'rb'), encoding='latin1')['param values']
+    basestring = str
+
 lasagne.layers.set_all_param_values(net['pool5'], values)
 style_layers = ['conv1_1', 'conv2_1', 'conv3_1', 'conv4_1', 'conv5_1']
 content_layers = ['conv4_2']
@@ -165,8 +169,9 @@ def Shared(i, v):
     else:
         shared_mem[i]=theano.shared(v)
     return shared_mem[i]
+
 def get_img(i):
-    return imread(i) if isinstance(i, str) else i            
+    return imread(i) if isinstance(i, basestring) else i            
 
 def transfer(IMAGE_W=512, photo_img=default_photo_img, art_img=default_art_img, 
              iters=8, maxfun=40, init_img=None, photo_weight=0.001, learning_rate=10., ADAM=False):
