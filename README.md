@@ -13,6 +13,36 @@ Several modification are made to speed up the process.
 2. Has an option to use ADAM as the optimizer.
 3. Use shared memory and can precompile theanot functions. 
 4. Has a server and a Kivy GUI client, so you can capture image using a mobile device and the use the GPU on a remote machine.
+Usage:
+```python
+import neuralStyle as ns
+import cv2
+ns.precompute() # compile theano functions
+for x in ns.p_transfer("photo.jpg", "art.jpg"):
+  cv2.imshow("output", x)
+```
+
+or you can use ```nstest.py photo.jpg art1.jpg art2.jpg art3.jpg``` to test it.
+
+## Demo program
+
+The demo program with kivy UI is designed for an exhibition, which takes user's input from webcam and rendered it with a style.
+
+The program expect an gpu of gtx 980 or better. To run this program, you will need a gpu at least as powerful as gtx 965m.
+If your gpu is slower, than you will need to chang zmq.RCVTIMEO to  a larger value(more than 15 seconds)
+First run the server, 
+```
+python nserver.py 
+```
+you will need to wait a while it for theano function to be compiled, it may take up to 2 minutes.
+Then you can run the kivy client. it requires a webcam and cv2 installed.
+Then you can run the client
+```
+python main.py
+```
+Currently, all messages are in Chinese.
+
+
 
 content and styles
 Many image files are from https://github.com/jcjohnson/neural-style and some are public domain
