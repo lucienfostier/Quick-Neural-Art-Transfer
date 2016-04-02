@@ -30,7 +30,10 @@ try:
     from lasagne.layers.dnn import Conv2DDNNLayer as ConvLayer
 except:
     print("unable to import Conv2DDNNLayer, use Conv2DLayer instead")
-    from lasagne.layers import Conv2DLayer as ConvLayer
+    from lasagne.layers import Conv2DLayer as ConvLayer0
+    def ConvLayer(*args, **kwargs):
+        return ConvLayer0(*args, , flip_filters=False, **kweargs)
+        
 from lasagne.layers import Pool2DLayer as PoolLayer
 from lasagne.nonlinearities import softmax
 
